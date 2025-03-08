@@ -39,9 +39,6 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState& state) {
     units::radian_t steerError = optimizedState.angle.Radians() - adjustedAngle;
     double steerOutput = m_steerPID.Calculate(steerError.value(), 0.0);
 
-    printf("Module %d - Encoder: %f, Angle: %f, Error: %f, SteerOut: %f\n",
-           m_encoder.GetDeviceID(), encoderTurns.value(), adjustedAngle.value(), steerError.value(), steerOutput);
-
     m_driveMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{driveOutput});
     m_steerMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{steerOutput});
 }
