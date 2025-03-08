@@ -1,4 +1,3 @@
-// SwerveModule.cpp
 #include "RobotContainer.h"
 #include <frc/controller/PIDController.h>
 #include <frc/geometry/Rotation2d.h>
@@ -13,18 +12,24 @@ SwerveModule::SwerveModule(int driveID, int steerID, int encoderID, double offse
       m_steerMotor(steerID),
       m_encoder(encoderID),
       m_angleOffset(offset), // Radians from constructor
-      m_steerPID(0.005, 0.03, 0.0002) { // Your working PID
+      m_steerPID(0.1, 0.0, 0.001) { // Adjusted PID: P=0.1, D=0.001 for better response
     
-    ctre::phoenix6::configs::TalonFXConfiguration config{};
-    config.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
-    m_driveMotor.GetConfigurator().Apply(config);
-    m_steerMotor.GetConfigurator().Apply(config);
+    ctre::phoenix6::configs::TalonFXConfiguration driveConfig{};
+    driveConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
+    m_driveMotor.GetConfigurator().Apply(driveConfig);
+
+    ctre::phoenix6::configs::TalonFXConfiguration steerConfig{};
+    steerConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive; // Test this
+    m_steerMotor.GetConfigurator().Apply(steerConfig);
 
     m_steerPID.EnableContinuousInput(-M_PI, M_PI); // Radians
 }
 
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState& state) {
-    auto encoderTurns = m_encoder.GetAbsolutePosition().GetValue();
+    auto encoderSignal = m_encoder.GetAbsolutePosition();
+    encoderSignal.Refresh();
+    auto encoderTurns = encoderSignal.GetValue();
+    
     auto currentAngle = units::radian_t{encoderTurns.value() * 2.0 * M_PI};
     auto adjustedAngle = currentAngle - units::radian_t{m_angleOffset};
     
@@ -33,6 +38,9 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState& state) {
     double driveOutput = optimizedState.speed / AutoConstants::kMaxSpeed;
     units::radian_t steerError = optimizedState.angle.Radians() - adjustedAngle;
     double steerOutput = m_steerPID.Calculate(steerError.value(), 0.0);
+
+    printf("Module %d - Encoder: %f, Angle: %f, Error: %f, SteerOut: %f\n",
+           m_encoder.GetDeviceID(), encoderTurns.value(), adjustedAngle.value(), steerError.value(), steerOutput);
 
     m_driveMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{driveOutput});
     m_steerMotor.SetControl(ctre::phoenix6::controls::DutyCycleOut{steerOutput});

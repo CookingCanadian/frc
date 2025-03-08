@@ -1,4 +1,3 @@
-// RobotContainer.h
 #pragma once
 
 #include <frc/XboxController.h>
@@ -42,7 +41,7 @@ private:
     ctre::phoenix6::hardware::TalonFX m_steerMotor;
     ctre::phoenix6::hardware::CANcoder m_encoder;
     double m_angleOffset;
-    frc::PIDController m_steerPID{0.5, 0.0, 0.0};
+    frc::PIDController m_steerPID{0.1, 0.0, 0.001}; // Match constructor values
 };
 
 namespace AutoConstants {
@@ -72,10 +71,11 @@ private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
 
-    SwerveModule m_frontLeft{5, 1, 9, -3.14};
-    SwerveModule m_frontRight{6, 2, 10, 0.0};
-    SwerveModule m_backLeft{8, 4, 12, 0.0};
-    SwerveModule m_backRight{7, 3, 11, 0.0};
+    // Updated offsets - replace these with your calibrated values after testing
+    SwerveModule m_frontLeft{5, 1, 9, 0.0};  // Placeholder, calibrate these
+    SwerveModule m_frontRight{6, 2, 10, 0.0}; // Placeholder, calibrate these
+    SwerveModule m_backLeft{8, 4, 12, 0.0};  // Placeholder, calibrate these
+    SwerveModule m_backRight{7, 3, 11, 0.0}; // Placeholder, calibrate these
 
     frc::SwerveDriveKinematics<4> m_kinematics{
         frc::Translation2d{units::meter_t{kWheelBase/2}, units::meter_t{kTrackWidth/2}},
