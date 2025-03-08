@@ -12,7 +12,7 @@ SwerveModule::SwerveModule(int driveID, int steerID, int encoderID, double offse
       m_steerMotor(steerID),
       m_encoder(encoderID),
       m_angleOffset(offset), // Radians from constructor
-      m_steerPID(0.1, 0.0, 0.001) { // Adjusted PID: P=0.1, D=0.001 for better response
+      m_steerPID(0.005, 0.03, 0.0002) { // Adjusted PID: P=0.1, D=0.001 for better response
     
     ctre::phoenix6::configs::TalonFXConfiguration driveConfig{};
     driveConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
