@@ -63,7 +63,6 @@ void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldR
     m_backLeft.SetDesiredState(states[2]);
     m_backRight.SetDesiredState(states[3]);
 }
-
 void RobotContainer::UpdateOdometry() {
     m_odometry.Update(
         frc::Rotation2d{units::degree_t{m_navx->GetYaw()}},
