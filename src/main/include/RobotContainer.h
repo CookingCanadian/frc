@@ -77,9 +77,9 @@ private:
     static constexpr double kTrackWidth = 0.495;
 
     SwerveModule m_frontLeft{5, 1, 9, 3.14};  
-    SwerveModule m_frontRight{6, 2, 10, 0.9}; 
-    SwerveModule m_backLeft{8, 4, 12, 0.7};   
-    SwerveModule m_backRight{7, 3, 11, 1.7};                      
+    SwerveModule m_frontRight{6, 2, 10, -0.5}; 
+    SwerveModule m_backLeft{8, 4, 12, -0.5};   
+    SwerveModule m_backRight{7, 3, 11, 0.4};                      
 
     rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};
     rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};
