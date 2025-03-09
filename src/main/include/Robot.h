@@ -2,7 +2,7 @@
 #pragma once
 
 #include <string>
-
+#include <units/time.h>
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
@@ -20,6 +20,7 @@ class Robot : public frc::TimedRobot {
   void DisabledPeriodic() override;
 
  private:
+  units::time::second_t autoStartTime;
   frc::SendableChooser<std::string> m_chooser;
   const std::string kAutoNameDefault = "Default";
   const std::string kAutoNameCustom = "My Auto";

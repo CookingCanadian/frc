@@ -1,4 +1,4 @@
-//RobotContainer.h
+// RobotContainer.h
 #pragma once
 
 #include <frc/XboxController.h>
@@ -17,12 +17,14 @@
 #include <units/acceleration.h>
 #include <units/angular_velocity.h>
 #include <units/angular_acceleration.h>
+#include <rev/SparkMax.h>
 #include <units/length.h>
 #include <numbers>
 
 // Define OperatorConstants namespace before RobotContainer class
 namespace OperatorConstants {
     constexpr int kSwerveControllerPort = 0;
+    constexpr int kElevatorControllerPort = 1;  // Second driver
     constexpr double kDeadband = 0.08;
     constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftY;
     constexpr int kForwardAxis = frc::XboxController::Axis::kLeftX;
@@ -38,10 +40,10 @@ public:
     frc::SwerveModulePosition GetPosition();
 
 private:
+    double m_angleOffset;
     ctre::phoenix6::hardware::TalonFX m_driveMotor;
     ctre::phoenix6::hardware::TalonFX m_steerMotor;
     ctre::phoenix6::hardware::CANcoder m_encoder;
-    double m_angleOffset;
     frc::PIDController m_steerPID{0.005, 0.03, 0.0002}; 
 };
 
@@ -65,18 +67,25 @@ public:
     ~RobotContainer();
     void Drive(double xSpeed, double ySpeed, double rot, bool fieldRelative);
     void UpdateOdometry();
+    void SetMechanismPosition(double joystickY);  // For elevator control
+
     studica::AHRS* m_navx;
-    frc::XboxController m_swerveController{OperatorConstants::kSwerveControllerPort}; 
+    frc::XboxController m_swerveController{OperatorConstants::kSwerveControllerPort};
+    frc::XboxController m_elevatorController{OperatorConstants::kElevatorControllerPort};  // Second driver
 
 private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
 
-    // Updated offsets - replace these with your calibrated values after testing
-    SwerveModule m_frontLeft{5, 1, 9, -0.00875631686+1.57+3.14};  // -0.5017
-    SwerveModule m_frontRight{6, 2, 10, 0.9}; // -0.1035
-    SwerveModule m_backLeft{8, 4, 12, 0.7};  // 0.8928
-    SwerveModule m_backRight{7, 3, 11, 1.7}; // 0.0615
+    // Swerve modules with updated offsets
+    SwerveModule m_frontLeft{5, 1, 9, -0.00875631686 + 1.57 + 3.14};  // -0.5017
+    SwerveModule m_frontRight{6, 2, 10, 0.9};                         // -0.1035
+    SwerveModule m_backLeft{8, 4, 12, 0.7};                           // 0.8928
+    SwerveModule m_backRight{7, 3, 11, 1.7};                          // 0.0615
+
+    // Elevator pivot motors (leader-follower)
+    rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};   // Leader
+    rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};  // Follower
 
     frc::SwerveDriveKinematics<4> m_kinematics{
         frc::Translation2d{units::meter_t{kWheelBase/2}, units::meter_t{kTrackWidth/2}},
@@ -86,8 +95,4 @@ private:
     };
 
     frc::SwerveDriveOdometry<4> m_odometry;
-
-    frc2::Trigger m_slowModeTrigger{[this]() -> bool {
-        return m_swerveController.GetLeftTriggerAxis() > 0.2;
-    }};
 };
