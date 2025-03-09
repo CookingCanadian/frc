@@ -1,4 +1,3 @@
-// RobotContainer.h
 #pragma once
 
 #include <frc/XboxController.h>
@@ -20,14 +19,14 @@
 #include <rev/SparkMax.h>
 #include <units/length.h>
 #include <numbers>
+#include <memory>
 
-// Define OperatorConstants namespace before RobotContainer class
 namespace OperatorConstants {
     constexpr int kSwerveControllerPort = 0;
-    constexpr int kElevatorControllerPort = 1;  // Second driver
+    constexpr int kElevatorControllerPort = 1;
     constexpr double kDeadband = 0.08;
-    constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftY;
-    constexpr int kForwardAxis = frc::XboxController::Axis::kLeftX;
+    constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftX;
+    constexpr int kForwardAxis = frc::XboxController::Axis::kLeftY;
     constexpr int kRotationAxis = frc::XboxController::Axis::kRightX;
     constexpr int kFieldRelativeButton = frc::XboxController::Button::kRightBumper;
 }
@@ -64,28 +63,26 @@ namespace AutoConstants {
 class RobotContainer {
 public:
     RobotContainer();
-    ~RobotContainer();
     void Drive(double xSpeed, double ySpeed, double rot, bool fieldRelative);
     void UpdateOdometry();
-    void SetMechanismPosition(double joystickY);  // For elevator control
+    void SetMechanismPosition(double joystickY);
+    frc::Pose2d GetPose() const; // Added public method to access odometry pose
 
-    studica::AHRS* m_navx;
+    std::unique_ptr<studica::AHRS> m_navx;
     frc::XboxController m_swerveController{OperatorConstants::kSwerveControllerPort};
-    frc::XboxController m_elevatorController{OperatorConstants::kElevatorControllerPort};  // Second driver
+    frc::XboxController m_elevatorController{OperatorConstants::kElevatorControllerPort};
 
 private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
 
-    // Swerve modules with updated offsets
-    SwerveModule m_frontLeft{5, 1, 9, -0.00875631686 + 1.57 + 3.14};  // -0.5017
-    SwerveModule m_frontRight{6, 2, 10, 0.9};                         // -0.1035
-    SwerveModule m_backLeft{8, 4, 12, 0.7};                           // 0.8928
-    SwerveModule m_backRight{7, 3, 11, 1.7};                          // 0.0615
+    SwerveModule m_frontLeft{5, 1, 9, 3.14};  
+    SwerveModule m_frontRight{6, 2, 10, 0.9}; 
+    SwerveModule m_backLeft{8, 4, 12, 0.7};   
+    SwerveModule m_backRight{7, 3, 11, 1.7};                      
 
-    // Elevator pivot motors (leader-follower)
-    rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};   // Leader
-    rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};  // Follower
+    rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};
+    rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};
 
     frc::SwerveDriveKinematics<4> m_kinematics{
         frc::Translation2d{units::meter_t{kWheelBase/2}, units::meter_t{kTrackWidth/2}},

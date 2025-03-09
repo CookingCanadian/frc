@@ -1,65 +1,62 @@
-// RobotContainer.cpp
 #include "RobotContainer.h"
 #include <frc/geometry/Rotation2d.h>
 #include <thread>
 #include <chrono>
 
 RobotContainer::RobotContainer()
-    : m_navx(new studica::AHRS(studica::AHRS::NavXComType::kMXP_SPI, 200)),
+    : m_navx(std::make_unique<studica::AHRS>(studica::AHRS::NavXComType::kMXP_SPI, 200)),
       m_odometry(m_kinematics, 
                  frc::Rotation2d{0_rad}, 
                  {m_frontLeft.GetPosition(), m_frontRight.GetPosition(),
                   m_backLeft.GetPosition(), m_backRight.GetPosition()},
                  frc::Pose2d{}) {
-    // Wait for NavX to connect
     int attempts = 0;
-    const int maxAttempts = 250; // ~5 seconds at 20ms per attempt
+    const int maxAttempts = 250;
     while (!m_navx->IsConnected() && attempts < maxAttempts) {
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
         attempts++;
     }
 
-    // If connected, wait for calibration and zero yaw
     if (m_navx->IsConnected()) {
         while (m_navx->IsCalibrating()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
         m_navx->ZeroYaw();
-    }
+    } 
 
-    // Configure leader motor (m_elevatorPivot, CAN ID 13)
-    m_elevatorPivot.SetInverted(false);  // Set inversion directly
     rev::spark::SparkBaseConfig leaderConfig{};
     leaderConfig
-        .SetIdleMode(rev::spark::SparkBaseConfig::IdleMode::kBrake)  // Brake mode
+        .Inverted(false)
+        .SetIdleMode(rev::spark::SparkBaseConfig::IdleMode::kBrake)
         .closedLoop
-            .SetFeedbackSensor(rev::spark::ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)  // NEO encoder
-            .Pid(0.1, 0.0, 0.0)  // P=0.1, tune as needed
+            .SetFeedbackSensor(rev::spark::ClosedLoopConfig::FeedbackSensor::kPrimaryEncoder)
+            .Pid(0.1, 0.0, 0.0)
         .OutputRange(-0.5, 0.5);
     m_elevatorPivot.Configure(leaderConfig, rev::spark::SparkBase::ResetMode::kResetSafeParameters,
                               rev::spark::SparkBase::PersistMode::kPersistParameters);
 
-    // Configure follower motor (m_elevatorPivot2, CAN ID 14)
-    m_elevatorPivot2.SetInverted(true);  // Set inversion directly
     rev::spark::SparkBaseConfig followerConfig{};
     followerConfig
+        .Inverted(true)
         .SetIdleMode(rev::spark::SparkBaseConfig::IdleMode::kBrake)
         .Follow(m_elevatorPivot.GetDeviceId(), true);
     m_elevatorPivot2.Configure(followerConfig, rev::spark::SparkBase::ResetMode::kResetSafeParameters,
                                rev::spark::SparkBase::PersistMode::kPersistParameters);
 }
 
-RobotContainer::~RobotContainer() {
-    delete m_navx;
-}
-
 void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldRelative) {
-    // Apply deadband from OperatorConstants
     if (std::abs(xSpeed) < OperatorConstants::kDeadband) xSpeed = 0.0;
     if (std::abs(ySpeed) < OperatorConstants::kDeadband) ySpeed = 0.0;
     if (std::abs(rot) < OperatorConstants::kDeadband) rot = 0.0;
 
-    // Convert to chassis speeds
+    if (xSpeed == 0.0 && ySpeed == 0.0 && rot == 0.0) {
+        m_frontLeft.SetDesiredState({0_mps, m_frontLeft.GetState().angle});
+        m_frontRight.SetDesiredState({0_mps, m_frontRight.GetState().angle});
+        m_backLeft.SetDesiredState({0_mps, m_backLeft.GetState().angle});
+        m_backRight.SetDesiredState({0_mps, m_backRight.GetState().angle});
+        return;
+    }
+
     frc::ChassisSpeeds speeds;
     if (fieldRelative) {
         speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
@@ -74,11 +71,9 @@ void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldR
             rot * AutoConstants::kMaxAngularSpeed};
     }
 
-    // Convert to module states and desaturate
     auto states = m_kinematics.ToSwerveModuleStates(speeds);
     m_kinematics.DesaturateWheelSpeeds(&states, AutoConstants::kMaxSpeed);
 
-    // Apply to modules
     m_frontLeft.SetDesiredState(states[0]);
     m_frontRight.SetDesiredState(states[1]);
     m_backLeft.SetDesiredState(states[2]);
@@ -94,19 +89,21 @@ void RobotContainer::UpdateOdometry() {
 }
 
 void RobotContainer::SetMechanismPosition(double joystickY) {
-    constexpr double kMaxPosition = 10.0;  // Max rotations
-    constexpr double kMinPosition = -10.0; // Min rotations
-    constexpr double kSpeed = 20.0;        // Rotations per full joystick input
+    constexpr double kMaxPosition = 10.0;
+    constexpr double kMinPosition = -10.0;
+    constexpr double kDeadband = 0.1;
 
-    // Get current position from leader motor
-    double currentPosition = m_elevatorPivot.GetEncoder().GetPosition();
-    double targetPosition = currentPosition + (joystickY * kSpeed);
+    if (std::abs(joystickY) < kDeadband) {
+        return;
+    }
 
-    // Clamp to safe range
-    if (targetPosition > kMaxPosition) targetPosition = kMaxPosition;
-    if (targetPosition < kMinPosition) targetPosition = kMinPosition;
+    double targetPosition = joystickY * kMaxPosition;
+    targetPosition = std::clamp(targetPosition, kMinPosition, kMaxPosition);
 
-    // Set position on leader only; follower mimics it
     m_elevatorPivot.GetClosedLoopController().SetReference(
         targetPosition, rev::spark::SparkBase::ControlType::kPosition);
+}
+
+frc::Pose2d RobotContainer::GetPose() const {
+    return m_odometry.GetPose(); 
 }

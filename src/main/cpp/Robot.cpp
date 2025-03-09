@@ -1,4 +1,3 @@
-// Robot.cpp
 #include "Robot.h"
 #include "RobotContainer.h"
 
@@ -16,11 +15,10 @@ void Robot::RobotPeriodic() {
 }
 
 void Robot::TeleopInit() {
-    robotContainer->m_navx->ZeroYaw(); // Reset yaw at teleop start
+    robotContainer->m_navx->ZeroYaw();
 }
 
 void Robot::TeleopPeriodic() {
-    // Swerve drive control
     double xSpeed = -robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kForwardAxis);
     double ySpeed = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kStrafeAxis);
     double rot = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kRotationAxis);
@@ -38,7 +36,6 @@ void Robot::TeleopPeriodic() {
 
     robotContainer->Drive(xSpeed, ySpeed, rot, fieldRelative);
 
-    // Elevator pivot control (fixed to use m_elevatorController)
     double mechanismY = -robotContainer->m_elevatorController.GetRawAxis(frc::XboxController::Axis::kLeftY);
     robotContainer->SetMechanismPosition(mechanismY);
 }
@@ -50,11 +47,16 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {
     auto now = frc::Timer::GetFPGATimestamp();
+    double elapsed = (now - autoStartTime).value();
 
-    if ((now - autoStartTime) < units::time::second_t(2)) {
-        robotContainer->Drive(0, 0.1, 0, false); // x, y, rotation, field/robot relative
+    if (elapsed < 2.0) {
+        robotContainer->Drive(0, 0.1, 0, true);
+        auto pose = robotContainer->GetPose(); 
+        if (pose.Y() > 0.5_m) {
+            robotContainer->Drive(0, 0, 0, true);
+        }
     } else {
-        robotContainer->Drive(0, 0, 0, false);
+        robotContainer->Drive(0, 0, 0, true);
     }
 }
 
