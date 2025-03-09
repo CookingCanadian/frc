@@ -43,7 +43,7 @@ private:
     ctre::phoenix6::hardware::TalonFX m_driveMotor;
     ctre::phoenix6::hardware::TalonFX m_steerMotor;
     ctre::phoenix6::hardware::CANcoder m_encoder;
-    frc::PIDController m_steerPID{0.005, 0.03, 0.0002}; 
+    frc::PIDController m_steerPID; 
 };
 
 namespace AutoConstants {
@@ -66,7 +66,7 @@ public:
     void Drive(double xSpeed, double ySpeed, double rot, bool fieldRelative);
     void UpdateOdometry();
     void SetMechanismPosition(double joystickY);
-    frc::Pose2d GetPose() const; // Added public method to access odometry pose
+    frc::Pose2d GetPose() const; 
 
     std::unique_ptr<studica::AHRS> m_navx;
     frc::XboxController m_swerveController{OperatorConstants::kSwerveControllerPort};

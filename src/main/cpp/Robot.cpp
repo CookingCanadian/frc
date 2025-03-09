@@ -31,7 +31,7 @@ void Robot::TeleopPeriodic() {
     }
 
     xSpeed *= speedScale;
-    ySpeed *= speedScale;
+    ySpeed *= -speedScale;
     rot *= speedScale;
 
     robotContainer->Drive(xSpeed, ySpeed, rot, fieldRelative);
@@ -50,9 +50,9 @@ void Robot::AutonomousPeriodic() {
     double elapsed = (now - autoStartTime).value();
 
     if (elapsed < 2.0) {
-        robotContainer->Drive(0, 0.1, 0, true);
+        robotContainer->Drive(0.2, 0, 0, true);
         auto pose = robotContainer->GetPose(); 
-        if (pose.Y() > 0.5_m) {
+        if (pose.Y() > 1_m) {
             robotContainer->Drive(0, 0, 0, true);
         }
     } else {
