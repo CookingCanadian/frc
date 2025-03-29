@@ -18,7 +18,7 @@ void Robot::TeleopInit() {
     robotContainer->m_navx->ZeroYaw();
 }
 
-void Robot::TeleopPeriodic() {
+void Robot::TeleopPeriodic() { // 13 & 14 for pivot
     double xSpeed = -robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kForwardAxis);
     double ySpeed = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kStrafeAxis);
     double rot = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kRotationAxis);
