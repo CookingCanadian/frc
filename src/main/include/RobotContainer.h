@@ -76,7 +76,7 @@ private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
 
-    SwerveModule m_frontLeft{5, 1, 9, 1.4};  
+    SwerveModule m_frontLeft{5, 1, 9, 1.4};  // Illuzi, tune these if the wheels aren't going straight
     SwerveModule m_frontRight{6, 2, 10, -0.6}; 
     SwerveModule m_backLeft{8, 4, 12, 3.0};   
     SwerveModule m_backRight{7, 3, 11, -0.8};                      
