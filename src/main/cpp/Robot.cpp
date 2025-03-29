@@ -32,7 +32,7 @@ void Robot::TeleopPeriodic() {
 
     xSpeed *= speedScale;
     ySpeed *= -speedScale;
-    rot *= speedScale;
+    rot *= -speedScale;
 
     robotContainer->Drive(xSpeed, ySpeed, rot, fieldRelative);
 

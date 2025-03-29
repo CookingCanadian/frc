@@ -43,7 +43,7 @@ private:
     ctre::phoenix6::hardware::TalonFX m_driveMotor;
     ctre::phoenix6::hardware::TalonFX m_steerMotor;
     ctre::phoenix6::hardware::CANcoder m_encoder;
-    frc::PIDController m_steerPID; 
+    frc::PIDController m_steerPID {0.1, 0.0, 0.0002}; 
 };
 
 namespace AutoConstants {
@@ -76,10 +76,10 @@ private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
 
-    SwerveModule m_frontLeft{5, 1, 9, 3.14};  
-    SwerveModule m_frontRight{6, 2, 10, -0.5}; 
-    SwerveModule m_backLeft{8, 4, 12, -0.5};   
-    SwerveModule m_backRight{7, 3, 11, 0.4};                      
+    SwerveModule m_frontLeft{5, 1, 9, 1.4};  
+    SwerveModule m_frontRight{6, 2, 10, -0.6}; 
+    SwerveModule m_backLeft{8, 4, 12, 3.0};   
+    SwerveModule m_backRight{7, 3, 11, -0.8};                      
 
     rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};
     rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};
