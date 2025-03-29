@@ -75,11 +75,11 @@ public:
 private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
-
-    SwerveModule m_frontLeft{5, 1, 9, 1.4};  // Illuzi, tune these if the wheels aren't going straight
-    SwerveModule m_frontRight{6, 2, 10, -0.6}; 
-    SwerveModule m_backLeft{8, 4, 12, 3.0};   
-    SwerveModule m_backRight{7, 3, 11, -0.8};                      
+    
+    SwerveModule m_frontLeft{5, 1, 9, 0.8635};  // Illuzi, tune these if the wheels aren't going straight
+    SwerveModule m_frontRight{6, 2, 10, 5.6764}; 
+    SwerveModule m_backLeft{8, 4, 12, -0.6914};   
+    SwerveModule m_backRight{7, 3, 11, 0.4011};                      
 
     rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};
     rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};
