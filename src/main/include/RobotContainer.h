@@ -82,7 +82,7 @@ private:
     SwerveModule m_backRight{7, 3, 11, 0.0};                      
 
     rev::spark::SparkMax m_elevatorPivot{13, rev::spark::SparkMax::MotorType::kBrushless};
-    rev::spark::SparkMax m_elevatorPivot2{14, rev::spark::SparkMax::MotorType::kBrushless};
+    rev::spark::SparkMax m_elevatorPivot2{12, rev::spark::SparkMax::MotorType::kBrushless};
 
     frc::SwerveDriveKinematics<4> m_kinematics{
         frc::Translation2d{units::meter_t{kWheelBase/2}, units::meter_t{kTrackWidth/2}},
