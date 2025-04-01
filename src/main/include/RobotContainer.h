@@ -49,8 +49,8 @@ private:
 namespace AutoConstants {
     constexpr auto kMaxSpeed = 4_mps;
     constexpr auto kMaxAcceleration = 6_mps_sq;
-    constexpr auto kMaxAngularSpeed = std::numbers::pi * 1_rad_per_s;
-    constexpr auto kMaxAngularAcceleration = std::numbers::pi * 2_rad_per_s_sq;
+    constexpr auto kMaxAngularSpeed = std::numbers::pi * 2_rad_per_s;
+    constexpr auto kMaxAngularAcceleration = std::numbers::pi * 3_rad_per_s_sq;
 
     constexpr double kPXController = 0.5;
     constexpr double kPYController = 0.5;
@@ -76,7 +76,7 @@ private:
     static constexpr double kWheelBase = 0.495;
     static constexpr double kTrackWidth = 0.495;
     
-    SwerveModule m_frontLeft{5, 1, 9, 0.0};  // Illuzi, tune these if the wheels aren't going straight
+    SwerveModule m_frontLeft{5, 1, 9, 0.0};  
     SwerveModule m_frontRight{6, 2, 10, 0.0}; 
     SwerveModule m_backLeft{8, 4, 12, 0.0};   
     SwerveModule m_backRight{7, 3, 11, 0.0};                      

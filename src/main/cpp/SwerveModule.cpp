@@ -12,21 +12,20 @@ SwerveModule::SwerveModule(int driveID, int steerID, int encoderID, double offse
       m_driveMotor(driveID),
       m_steerMotor(steerID),
       m_encoder(encoderID),
-      m_steerPID(0.1, 0.0, 0.0002) { 
-    
-
+      m_steerPID(0.2, 0.0, 0.0) { 
 
     ctre::phoenix6::configs::TalonFXConfiguration driveConfig{};
     driveConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    //driveConfig.CurrentLimits.StatorCurrentLimit = 100;
+    driveConfig.CurrentLimits.StatorCurrentLimit = units::ampere_t{90.0}; 
+
     m_driveMotor.GetConfigurator().Apply(driveConfig);
 
     ctre::phoenix6::configs::TalonFXConfiguration steerConfig{};
     steerConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive; 
     m_steerMotor.GetConfigurator().Apply(steerConfig);
 
-    m_steerPID.EnableContinuousInput(-M_PI, M_PI); // Radians
+    m_steerPID.EnableContinuousInput(-M_PI, M_PI); 
 }
 
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState& state) {
