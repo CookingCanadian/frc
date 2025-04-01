@@ -18,7 +18,7 @@ void Robot::TeleopInit() {
     robotContainer->m_navx->ZeroYaw();
 }
 
-void Robot::TeleopPeriodic() { // 13 & 14 for pivot
+void Robot::TeleopPeriodic() { 
     double xSpeed = -robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kForwardAxis);
     double ySpeed = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kStrafeAxis);
     double rot = robotContainer->m_swerveController.GetRawAxis(OperatorConstants::kRotationAxis);
@@ -34,10 +34,10 @@ void Robot::TeleopPeriodic() { // 13 & 14 for pivot
     ySpeed *= speedScale;
     rot *= speedScale;
 
-    robotContainer->Drive(-xSpeed, ySpeed, rot, fieldRelative);
+    robotContainer->Drive(-xSpeed, ySpeed, rot, true);
 
-    double mechanismY = -robotContainer->m_elevatorController.GetRawAxis(frc::XboxController::Axis::kLeftY);
-    robotContainer->SetMechanismPosition(mechanismY);
+    // double mechanismY = -robotContainer->m_elevatorController.GetRawAxis(frc::XboxController::Axis::kLeftY);
+    // robotContainer->SetMechanismPosition(mechanismY);
 }
 
 void Robot::AutonomousInit() {

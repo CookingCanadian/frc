@@ -1,7 +1,9 @@
 #include "RobotContainer.h"
 #include <frc/geometry/Rotation2d.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 #include <thread>
 #include <chrono>
+using namespace std;
 
 RobotContainer::RobotContainer()
     : m_navx(std::make_unique<studica::AHRS>(studica::AHRS::NavXComType::kMXP_SPI, 200)),
@@ -64,6 +66,8 @@ void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldR
             ySpeed * AutoConstants::kMaxSpeed,
             rot * AutoConstants::kMaxAngularSpeed,
             frc::Rotation2d{units::degree_t{m_navx->GetYaw()}});
+            frc::SmartDashboard::PutNumber("yaw", m_navx->GetYaw());
+            
     } else {
         speeds = frc::ChassisSpeeds{
             xSpeed * AutoConstants::kMaxSpeed,

@@ -24,6 +24,7 @@
 namespace OperatorConstants {
     constexpr int kSwerveControllerPort = 0;
     constexpr int kElevatorControllerPort = 1;
+
     constexpr double kDeadband = 0.08;
     constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftX;
     constexpr int kForwardAxis = frc::XboxController::Axis::kLeftY;
@@ -43,7 +44,7 @@ private:
     ctre::phoenix6::hardware::TalonFX m_driveMotor;
     ctre::phoenix6::hardware::TalonFX m_steerMotor;
     ctre::phoenix6::hardware::CANcoder m_encoder;
-    frc::PIDController m_steerPID {0.1, 0.0, 0.0002}; 
+    frc::PIDController m_steerPID {0.0, 0.0, 0.0}; 
 };
 
 namespace AutoConstants {
