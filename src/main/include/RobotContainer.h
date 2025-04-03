@@ -25,7 +25,7 @@ namespace OperatorConstants {
     constexpr int kSwerveControllerPort = 0;
     constexpr int kElevatorControllerPort = 1;
 
-    constexpr double kDeadband = 0.08;
+    constexpr double kDeadband = 0.04;
     constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftX;
     constexpr int kForwardAxis = frc::XboxController::Axis::kLeftY;
     constexpr int kRotationAxis = frc::XboxController::Axis::kRightX;

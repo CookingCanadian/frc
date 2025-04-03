@@ -34,7 +34,7 @@ void Robot::TeleopPeriodic() {
     ySpeed *= speedScale;
     rot *= speedScale;
 
-    robotContainer->Drive(-xSpeed, ySpeed, rot, true);
+    robotContainer->Drive(-xSpeed, ySpeed, rot, fieldRelative);
 
     // double mechanismY = -robotContainer->m_elevatorController.GetRawAxis(frc::XboxController::Axis::kLeftY);
     // robotContainer->SetMechanismPosition(mechanismY);

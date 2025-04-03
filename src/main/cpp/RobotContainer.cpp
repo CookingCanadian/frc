@@ -47,10 +47,12 @@ RobotContainer::RobotContainer()
 }
 
 void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldRelative) {
+    // Apply deadband
     if (std::abs(xSpeed) < OperatorConstants::kDeadband) xSpeed = 0.0;
     if (std::abs(ySpeed) < OperatorConstants::kDeadband) ySpeed = 0.0;
     if (std::abs(rot) < OperatorConstants::kDeadband) rot = 0.0;
 
+    // Stop motors if no input
     if (xSpeed == 0.0 && ySpeed == 0.0 && rot == 0.0) {
         m_frontLeft.SetDesiredState({0_mps, m_frontLeft.GetState().angle});
         m_frontRight.SetDesiredState({0_mps, m_frontRight.GetState().angle});
@@ -59,25 +61,30 @@ void RobotContainer::Drive(double xSpeed, double ySpeed, double rot, bool fieldR
         return;
     }
 
-    frc::ChassisSpeeds speeds;
-    if (fieldRelative) {
-        speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(
-            xSpeed * AutoConstants::kMaxSpeed,
-            ySpeed * AutoConstants::kMaxSpeed,
-            rot * AutoConstants::kMaxAngularSpeed,
-            frc::Rotation2d{units::degree_t{m_navx->GetYaw()}});
-            frc::SmartDashboard::PutNumber("yaw", m_navx->GetYaw());
-            
-    } else {
-        speeds = frc::ChassisSpeeds{
-            xSpeed * AutoConstants::kMaxSpeed,
-            ySpeed * AutoConstants::kMaxSpeed,
-            rot * AutoConstants::kMaxAngularSpeed};
-    }
+    // Scale inputs to max speeds
+    units::meters_per_second_t vx = xSpeed * AutoConstants::kMaxSpeed;
+    units::meters_per_second_t vy = ySpeed * AutoConstants::kMaxSpeed;
+    units::radians_per_second_t omega = rot * AutoConstants::kMaxAngularSpeed;
 
+    // Get gyro angle (negate yaw for counterclockwise-positive convention)
+    frc::Rotation2d robotAngle = frc::Rotation2d{units::degree_t{-m_navx->GetYaw()}};
+
+    // Compute chassis speeds
+    frc::ChassisSpeeds speeds = fieldRelative
+        ? frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx, vy, omega, robotAngle)
+        : frc::ChassisSpeeds{vx, vy, omega};
+
+    // Convert to module states
     auto states = m_kinematics.ToSwerveModuleStates(speeds);
     m_kinematics.DesaturateWheelSpeeds(&states, AutoConstants::kMaxSpeed);
 
+    // Optimize module states (assumes GetState returns current angle)
+    states[0] = frc::SwerveModuleState::Optimize(states[0], m_frontLeft.GetState().angle);
+    states[1] = frc::SwerveModuleState::Optimize(states[1], m_frontRight.GetState().angle);
+    states[2] = frc::SwerveModuleState::Optimize(states[2], m_backLeft.GetState().angle);
+    states[3] = frc::SwerveModuleState::Optimize(states[3], m_backRight.GetState().angle);
+
+    // Set module states
     m_frontLeft.SetDesiredState(states[0]);
     m_frontRight.SetDesiredState(states[1]);
     m_backLeft.SetDesiredState(states[2]);
