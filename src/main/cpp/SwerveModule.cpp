@@ -17,7 +17,7 @@ SwerveModule::SwerveModule(int driveID, int steerID, int encoderID, double offse
     ctre::phoenix6::configs::TalonFXConfiguration driveConfig{};
     driveConfig.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::CounterClockwise_Positive;
     driveConfig.CurrentLimits.StatorCurrentLimitEnable = true;
-    driveConfig.CurrentLimits.StatorCurrentLimit = units::ampere_t{90.0}; 
+    driveConfig.CurrentLimits.StatorCurrentLimit = units::ampere_t{80.0}; 
 
     m_driveMotor.GetConfigurator().Apply(driveConfig);
 

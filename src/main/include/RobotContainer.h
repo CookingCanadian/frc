@@ -25,7 +25,7 @@ namespace OperatorConstants {
     constexpr int kSwerveControllerPort = 0;
     constexpr int kElevatorControllerPort = 1;
 
-    constexpr double kDeadband = 0.04;
+    constexpr double kDeadband = 0.005;
     constexpr int kStrafeAxis = frc::XboxController::Axis::kLeftX;
     constexpr int kForwardAxis = frc::XboxController::Axis::kLeftY;
     constexpr int kRotationAxis = frc::XboxController::Axis::kRightX;
@@ -50,8 +50,8 @@ private:
 namespace AutoConstants {
     constexpr auto kMaxSpeed = 4_mps;
     constexpr auto kMaxAcceleration = 6_mps_sq;
-    constexpr auto kMaxAngularSpeed = std::numbers::pi * 2_rad_per_s;
-    constexpr auto kMaxAngularAcceleration = std::numbers::pi * 3_rad_per_s_sq;
+    constexpr auto kMaxAngularSpeed = std::numbers::pi * 3_rad_per_s;
+    constexpr auto kMaxAngularAcceleration = std::numbers::pi * 4_rad_per_s_sq;
 
     constexpr double kPXController = 0.5;
     constexpr double kPYController = 0.5;

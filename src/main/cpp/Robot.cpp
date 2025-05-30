@@ -26,8 +26,8 @@ void Robot::TeleopPeriodic() {
 
     double triggerValue = robotContainer->m_swerveController.GetLeftTriggerAxis();
     double speedScale = 1.0;
-    if (triggerValue > 0.2) {
-        speedScale = 1.0 - ((triggerValue - 0.2) / 0.8) * 0.8;
+    if (triggerValue > 0.1) {
+        speedScale = 1.0 - ((triggerValue - 0.1));
     }
 
     xSpeed *= speedScale;
@@ -49,8 +49,8 @@ void Robot::AutonomousPeriodic() {
     auto now = frc::Timer::GetFPGATimestamp();
     double elapsed = (now - autoStartTime).value();
 
-    if (elapsed < 2.0) {
-        robotContainer->Drive(0.2, 0, 0, true);
+    if (elapsed < 1.0) {
+        robotContainer->Drive(0.1, 0, 0, true);
         auto pose = robotContainer->GetPose(); 
         if (pose.Y() > 1_m) {
             robotContainer->Drive(0, 0, 0, true);
